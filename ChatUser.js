@@ -65,10 +65,9 @@ class ChatUser {
 
   /** Handle a joke: send the joke only to the user.   * */
 
-  handleJoke() {
-    console.log("handleJoke runs");
-
-    const joke = getJoke();
+  async handleJoke() {
+    const joke = await getJoke();
+    console.log('joke', joke)
 
     this._send(JSON.stringify({
       name: this.name,
@@ -76,6 +75,17 @@ class ChatUser {
       joke: joke,
     }));
   }
+
+    /** Handle get members: send the members list only to the user.   * */
+
+    handleGetMembers() {
+      this._send(JSON.stringify({
+        name: this.name,
+        type: "get-members",
+        members: Array.from(this.room.members),
+      }));
+    }
+
 
   /** Handle messages from client:
    *
@@ -92,7 +102,8 @@ class ChatUser {
 
     if (msg.type === "join") this.handleJoin(msg.name);
     else if (msg.type === "chat") this.handleChat(msg.text);
-    else if (msg.text === "get-joke") this.handleJoke();
+    else if (msg.type === "get-joke") this.handleJoke();
+    else if (msg.type === "get-members") this.handleGetMembers();
     else throw new Error(`bad message: ${msg.type}`);
   }
 

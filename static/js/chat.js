@@ -6,7 +6,6 @@ const urlParts = document.URL.split("/");
 const roomName = urlParts[urlParts.length - 1];
 const ws = new WebSocket(`ws://localhost:3000/chat/${roomName}`);
 
-
 const name = prompt("Username? (no spaces)");
 const $messageArea = $("#m");
 
@@ -19,7 +18,6 @@ ws.onopen = function (evt) {
   ws.send(JSON.stringify(data));
 };
 
-
 /** called when msg received from server; displays it. */
 
 ws.onmessage = function (evt) {
@@ -27,6 +25,7 @@ ws.onmessage = function (evt) {
 
   let msg = JSON.parse(evt.data);
   let item;
+  console.log("msg received", msg);
 
   if (msg.type === "note") {
     item = $(`<li><i>${msg.text}</i></li>`);
@@ -34,6 +33,8 @@ ws.onmessage = function (evt) {
     item = $(`<li><b>${msg.name}: </b>${msg.text}</li>`);
   } else if (msg.type === "get-joke") {
     item = $(`<li><i>${msg.joke}</i></li>`);
+  } else if (msg.type === "get-members") {
+    item = $(`<li><i>${msg.members.map(m => m.name).join(", ")}</i></li>`);
   } else {
     return console.error(`bad message: ${msg}`);
   }
@@ -41,13 +42,11 @@ ws.onmessage = function (evt) {
   $("#messages").append(item);
 };
 
-
 /** called on error; logs it. */
 
 ws.onerror = function (evt) {
   console.error(`err ${evt}`);
 };
-
 
 /** called on connection-closed; logs it. */
 
@@ -55,24 +54,23 @@ ws.onclose = function (evt) {
   console.log("close", evt);
 };
 
-
 /** send message when button pushed. */
 
 $("form").on("submit", function (evt) {
   evt.preventDefault();
-  console.log("form submitted");
 
   const submittedText = $messageArea.val();
   let data;
 
   if (submittedText === "/joke") {
-    console.log("it noticed we asked for a joke");
-    data = { type: "get-joke", text: submittedText };
+    data = { type: "get-joke" };
+  } else if (submittedText === "/members") {
+    data = { type: "get-members" };
   } else {
     data = { type: "chat", text: submittedText };
   }
 
   ws.send(JSON.stringify(data));
 
-  submittedText.val("");
+  $messageArea.val("");
 });
