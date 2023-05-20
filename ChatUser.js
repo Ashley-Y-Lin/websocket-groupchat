@@ -89,8 +89,19 @@ class ChatUser {
   /** Handle a private message: send the joke only to the intended user.   * */
 
   handlePrivMessage(recipient, text) {
-    console.log("handlePrivMessage is running");
+    // r = this.room.getMember(recipient)
 
+    this.room.directMessage(recipient, {
+      name: this.name,
+      type: "priv",
+      text: text,
+    });
+  }
+
+  /** Handle a new username: change the user's username, and broadcast a message
+   * to everyone in the room that the username was changed.   * */
+
+  handleNewUsername(newName) {
     this.room.directMessage(recipient, {
       name: this.name,
       type: "priv",
@@ -109,15 +120,16 @@ class ChatUser {
    */
 
   handleMessage(jsonData) {
-    console.log("message is being handled");
-
     let msg = JSON.parse(jsonData);
+
+    //TODO: use an object instead of lots of conditional logic, keys is types
 
     if (msg.type === "join") this.handleJoin(msg.name);
     else if (msg.type === "chat") this.handleChat(msg.text);
     else if (msg.type === "get-joke") this.handleJoke();
     else if (msg.type === "get-members") this.handleGetMembers();
     else if (msg.type === "priv") this.handlePrivMessage(msg.recipient, msg.text);
+    else if (msg.type === "newUsername") this.handleNewUsername(msg.newName);
     else throw new Error(`bad message: ${msg.type}`);
   }
 

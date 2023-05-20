@@ -27,6 +27,9 @@ ws.onmessage = function (evt) {
   let item;
   console.log("msg received", msg);
 
+  //TODO: use the global object with the type keys, and find some way to
+  // store the messages here
+
   if (msg.type === "note") {
     item = $(`<li><i>${msg.text}</i></li>`);
   } else if (msg.type === "chat") {

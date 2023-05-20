@@ -73,9 +73,9 @@ class Room {
    * @param data {string} message to send
    * */
 
-  directMessage(username, data) {
-    console.log("directMessage is running");
+  //TODO: make a function to get member, separate concerns
 
+  directMessage(username, data) {
     for (let member of this.members) {
       if (member.name === username){
         member.send(JSON.stringify(data));
