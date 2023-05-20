@@ -67,7 +67,7 @@ class ChatUser {
 
   async handleJoke() {
     const joke = await getJoke();
-    console.log('joke', joke)
+    console.log('joke', joke);
 
     this._send(JSON.stringify({
       name: this.name,
@@ -76,16 +76,27 @@ class ChatUser {
     }));
   }
 
-    /** Handle get members: send the members list only to the user.   * */
+  /** Handle get members: send the members list only to the user.   * */
 
-    handleGetMembers() {
-      this._send(JSON.stringify({
-        name: this.name,
-        type: "get-members",
-        members: Array.from(this.room.members),
-      }));
-    }
+  handleGetMembers() {
+    this._send(JSON.stringify({
+      name: this.name,
+      type: "get-members",
+      members: Array.from(this.room.members),
+    }));
+  }
 
+  /** Handle a private message: send the joke only to the intended user.   * */
+
+  handlePrivMessage(recipient, text) {
+    console.log("handlePrivMessage is running");
+
+    this.room.directMessage(recipient, {
+      name: this.name,
+      type: "priv",
+      text: text,
+    });
+  }
 
   /** Handle messages from client:
    *
@@ -98,12 +109,15 @@ class ChatUser {
    */
 
   handleMessage(jsonData) {
+    console.log("message is being handled");
+
     let msg = JSON.parse(jsonData);
 
     if (msg.type === "join") this.handleJoin(msg.name);
     else if (msg.type === "chat") this.handleChat(msg.text);
     else if (msg.type === "get-joke") this.handleJoke();
     else if (msg.type === "get-members") this.handleGetMembers();
+    else if (msg.type === "priv") this.handlePrivMessage(msg.recipient, msg.text);
     else throw new Error(`bad message: ${msg.type}`);
   }
 

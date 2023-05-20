@@ -35,6 +35,10 @@ ws.onmessage = function (evt) {
     item = $(`<li><i>${msg.joke}</i></li>`);
   } else if (msg.type === "get-members") {
     item = $(`<li><i>${msg.members.map(m => m.name).join(", ")}</i></li>`);
+  } else if (msg.type === "priv") {
+    item = $(`<li><i>${msg.text}</i></li>`);
+  } else if (msg.type === "newUsername") {
+    item = $(`<li><i>${msg.newName}</i></li>`);
   } else {
     return console.error(`bad message: ${msg}`);
   }
@@ -66,6 +70,19 @@ $("form").on("submit", function (evt) {
     data = { type: "get-joke" };
   } else if (submittedText === "/members") {
     data = { type: "get-members" };
+  } else if (submittedText.startsWith("/priv")) {
+    const submittedWords = submittedText.split(' ');
+    data = {
+      type: "priv",
+      recipient: submittedWords[1],
+      text: submittedWords.slice(2).join(' ')
+    };
+  } else if (submittedText.startsWith("/name")){
+    const submittedWords = submittedText.split(' ');
+    data = {
+      type: "newUsername",
+      newName: submittedWords[2]
+    };
   } else {
     data = { type: "chat", text: submittedText };
   }

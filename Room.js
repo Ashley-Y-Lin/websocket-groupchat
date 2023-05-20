@@ -67,6 +67,21 @@ class Room {
       member.send(JSON.stringify(data));
     }
   }
+
+  /** Send private message to a specific member in a room.
+   *
+   * @param data {string} message to send
+   * */
+
+  directMessage(username, data) {
+    console.log("directMessage is running");
+
+    for (let member of this.members) {
+      if (member.name === username){
+        member.send(JSON.stringify(data));
+      }
+    }
+  }
 }
 
 module.exports = Room;
