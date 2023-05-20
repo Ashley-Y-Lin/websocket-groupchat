@@ -41,7 +41,7 @@ ws.onmessage = function (evt) {
   } else if (msg.type === "priv") {
     item = $(`<li><i>${msg.text}</i></li>`);
   } else if (msg.type === "newUsername") {
-    item = $(`<li><i>${msg.newName}</i></li>`);
+    item = $(`<li><i>${msg.text}</i></li>`);
   } else {
     return console.error(`bad message: ${msg}`);
   }
@@ -84,7 +84,7 @@ $("form").on("submit", function (evt) {
     const submittedWords = submittedText.split(' ');
     data = {
       type: "newUsername",
-      newName: submittedWords[2]
+      newName: submittedWords[1]
     };
   } else {
     data = { type: "chat", text: submittedText };

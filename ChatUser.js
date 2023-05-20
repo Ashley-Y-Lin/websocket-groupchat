@@ -23,6 +23,12 @@ class ChatUser {
     console.log(`created chat in ${this.room.name}`);
   }
 
+  changeUsername(newUsername) {
+    let oldUsername = this.name;
+    this.name = newUsername;
+    return `${oldUsername} changed their name to ${this.name}`;
+  }
+
   /** Send msgs to this client using underlying connection-send-function.
    *
    * @param data {string} message to send
@@ -102,10 +108,10 @@ class ChatUser {
    * to everyone in the room that the username was changed.   * */
 
   handleNewUsername(newName) {
-    this.room.directMessage(recipient, {
+    this.room.broadcast({
       name: this.name,
-      type: "priv",
-      text: text,
+      type: "newUsername",
+      text: this.changeUsername(newName),
     });
   }
 
